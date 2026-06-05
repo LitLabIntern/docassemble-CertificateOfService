@@ -103,6 +103,7 @@ code: |
   person_served
   service_date
   papers_served
+  delivery_of_papers
   # set_progress(16)
   if person_served == "Other":
     person_served = other_person_served
@@ -201,6 +202,12 @@ fields:
       variable: user_ask_role
       is: "defendant"
 ---
+code: |
+  if user_ask_role == "defendant":
+    defendant_served = False
+  elif user_ask_role == "plaintiff":
+    plaintiff_served = False
+---
 id: Information About Service Date
 question: |
   When Were the Papers Delivered?
@@ -211,15 +218,28 @@ fields:
 id: Details of Papers Served
 question: |
   Details of Papers Served
-subquestion: |
-  List the papers you served.
 fields:
   - "List of papers served": papers_served
     input type: area
-  - "Delivered in person": personal_service
-    datatype: yesno
-  - "Sent papers by mail": service_by_mail
-    datatype: yesno
+---
+mandatory: true
+id: How were the papers served
+question: |
+  How were the papers served?
+fields:
+  - Choose one: delivery_of_papers
+    input type: radio
+    choices:
+      - Delivered in person
+      - Sent papers by mail
+---
+code: |
+  if delivery_of_papers == "Delivered in person":
+    personal_service = True
+    service_by_mail = False
+  elif delivery_of_papers == "Sent papers by mail":
+    service_by_mail = True
+    personal_service = False
 ---
 id: Who Was Served
 question: |
