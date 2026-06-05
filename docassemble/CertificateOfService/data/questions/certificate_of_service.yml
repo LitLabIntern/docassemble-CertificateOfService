@@ -15,7 +15,7 @@ metadata:
   before_you_start: |
     This interview will help you file a Certificate of Service.
     
-    Before you get started, please gather:
+    Before you get started, gather:
     
     1. 
     1. 
@@ -100,10 +100,10 @@ code: |
   other_parties.gather()
   # set_parts(subtitle=str(users))
   docket_number
+  person_served
   service_date
   papers_served
   # set_progress(16)
-  person_served
   if person_served == "Other":
     person_served = other_person_served
   service_address.address
@@ -161,7 +161,7 @@ question: |
 subquestion: |
   This interview will help you file a Certificate of Service.
   
-  Before you get started, please gather:
+  Before you get started, gather:
   
   1. 
   1. 
@@ -203,16 +203,10 @@ fields:
 ---
 id: Information About Service Date
 question: |
-  Information About Service Date
-subquestion: |
-  Please have the date ready when you served the papers.
+  When Were the Papers Delivered?
 fields:
   - "Date papers were served": service_date
     datatype: date
-  - "Plaintiff received papers": plaintiff_served
-    datatype: yesno
-  - "Defendant received papers": defendant_served
-    datatype: yesno
 ---
 id: Details of Papers Served
 question: |
