@@ -104,9 +104,19 @@ code: |
   service_date
   papers_served
   delivery_of_papers
+  service_by_mail
   # set_progress(16)
   if person_served == "Other":
     person_served = other_person_served
+    defendant_served = False
+    plaintiff_served = False
+  else:
+    if user_ask_role == "defendant":
+      defendant_served = False
+      plaintiff_served = True
+    elif user_ask_role == "plaintiff":
+      plaintiff_served = False
+      defendant_served = True
   service_address.address
   # set_progress(32)
   # set_progress(48)
@@ -202,12 +212,6 @@ fields:
       variable: user_ask_role
       is: "defendant"
 ---
-code: |
-  if user_ask_role == "defendant":
-    defendant_served = False
-  elif user_ask_role == "plaintiff":
-    plaintiff_served = False
----
 id: Information About Service Date
 question: |
   When Were the Papers Delivered?
@@ -222,7 +226,6 @@ fields:
   - "List of papers served": papers_served
     input type: area
 ---
-mandatory: true
 id: How were the papers served
 question: |
   How were the papers served?
@@ -257,6 +260,10 @@ fields:
       variable: person_served
       is: Other
 ---
+code: |
+  if user_ask_role == "plaintiff":
+    defendant_served = True
+---
 id: Service address
 sets: 
   - service_address.address
@@ -284,9 +291,6 @@ continue button field: certificate_of_service_preview_question
 ---
 code: |
   signature_fields = ["users[0].signature"]
----
-code: |
-  signature = DAEmpty()
 ---
 code: |
   # This is a placeholder for the addresses that will be searched
@@ -481,7 +485,7 @@ attachment:
       - "docket_number": ${ docket_number }
       - "service_address": ${ service_address }
       - "defendants_name_full": ${ defendants[0] }
-      - "signature": ${ signature }
+      - "signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
       - "service_date": ${ service_date.format() }
       - "users1_name_full": ${ users[0] }
