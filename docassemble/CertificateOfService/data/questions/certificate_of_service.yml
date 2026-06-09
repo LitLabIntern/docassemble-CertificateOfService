@@ -479,7 +479,6 @@ edit:
   - phone_number
   - email
 confirm: True
-
 ---
 id: download certificate_of_service
 event: certificate_of_service_download
@@ -529,10 +528,12 @@ attachment:
   pdf template file: certificate_of_service.pdf
   fields:
       - "service_by_mail": ${ service_by_mail }
-      - "person_served": ${ person_served }
+      - "person_served": ${ " " if service_by_mail else person_served }
+      - "person_served_1": ${ person_served if service_by_mail else " " }
+      - "service_address": ${ " " if service_by_mail else service_address }
+      - "service_address_1": ${ service_address if service_by_mail else " " }
       - "plaintiffs_name_full": ${ plaintiffs_name_full }
       - "docket_number": ${ docket_number }
-      - "service_address": ${ service_address }
       - "defendants_name_full": ${ defendants_name_full }
       - "signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
