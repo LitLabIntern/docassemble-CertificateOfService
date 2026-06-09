@@ -42,7 +42,6 @@ metadata:
   tags:
     - "DI-00-00-00-00"
     - "GO-00-00-00-00"
-  # Keep legacy tags behavior for compatibility with downstream tools.
   authors:
   original_form: []
   original_form_published_on: ""
@@ -60,11 +59,9 @@ metadata:
   update_notes: |
 ---
 code: |
-  # This controls the default country and list of states in address field questions
   AL_DEFAULT_COUNTRY = "US"
 ---
 code: |
-  # This controls the default state in address field questions
   AL_DEFAULT_STATE = "MA"
 ---
 code: |
@@ -88,19 +85,16 @@ comment: |
   Controls order and branching logic for questions specific to this form
 id: interview_order_certificate_of_service
 code: |
-  # Set the allowed courts for this interview
   allowed_courts = []
-  # Below sets the user_role and user_ask_role by asking a question.
-  # You can set user_ask_role directly instead to either 'plaintiff' or 'defendant'
   user_ask_role
   users.gather()
   users[0].address.address
   users[0].phone_number
   users[0].email
   other_parties.gather()
-  # set_parts(subtitle=str(users))
   docket_number
   if user_ask_role == "defendant":
+  # set_progress(16)
     defendants_name_full = users[0].name.full()
     plaintiffs_name_full = other_parties[0].name.full() 
   else:
@@ -108,10 +102,10 @@ code: |
     defendants_name_full = other_parties[0].name.full()
   person_served
   service_date
+  # set_progress(32)
   papers_served
   delivery_of_papers
   service_by_mail
-  # set_progress(16)
   if person_served == "Other":
     person_served = other_person_served
     defendant_served = False
@@ -123,12 +117,11 @@ code: |
     elif user_ask_role == "plaintiff":
       plaintiff_served = False
       defendant_served = True
-  service_address.address
-  # set_progress(32)
   # set_progress(48)
+  service_address.address
   signature_date
-  basic_questions_signature_flow
   # set_progress(64)
+  basic_questions_signature_flow
   interview_order_certificate_of_service = True
 ---
 comment: |
@@ -140,7 +133,6 @@ code: |
   certificate_of_service_intro
   interview_order_certificate_of_service
   signature_date
-  # Store anonymous data for analytics / statistics
   store_variables_snapshot(
       persistent=True,
       data={
@@ -267,23 +259,23 @@ validation code: |
 ---
 id: Information About Service Date
 question: |
-  When Were the Papers Delivered?
+  When were the papers delivered?
 fields:
-  - "Date papers were served": service_date
+  - "Date": service_date
     datatype: date
 ---
 id: Details of Papers Served
 question: |
-  Details of Papers Served
+  Which papers were delivered?
 fields:
-  - "List of papers served": papers_served
+  - "List the papers that were delivered": papers_served
     input type: area
 ---
 id: How were the papers served
 question: |
-  How were the papers served?
+  How were the papers delivered?
 fields:
-  - Choose one: delivery_of_papers
+  - Choose: delivery_of_papers
     input type: radio
     choices:
       - Delivered in person
@@ -297,13 +289,11 @@ code: |
     service_by_mail = True
     personal_service = False
 ---
-id: Who Was Served
+id: Who was served
 question: |
-  Who Was Served?
-subquestion: |
-  Please provide the name of the person you served.
+  Who recieved the papers?
 fields:
-  - Name: person_served
+  - Choose: person_served
     input type: radio
     choices:
       - ${ other_parties[0].name.full() }
@@ -317,7 +307,7 @@ id: Service address
 sets: 
   - service_address.address
 question: |
-  At what address did you serve them?
+  At what address did you deliver the papers?
 fields:
   - code: |
       service_address.address_fields()
@@ -342,9 +332,6 @@ code: |
   signature_fields = ["users[0].signature"]
 ---
 code: |
-  # This is a placeholder for the addresses that will be searched
-  # for matching address to court. Edit if court venue is based on 
-  # a different address than the user's
   [user.address.address for user in users.complete_elements()]
   addresses_to_search = [user.address for user in users.complete_elements()]
 ---
@@ -499,19 +486,14 @@ subquestion: |
 
 progress: 100
 ---
-# ALDocument objects specify the metadata for each template
 objects:
   - certificate_of_service_Post_interview_instructions: ALDocument.using(title="Instructions", filename="certificate_of_service_next_steps.docx", enabled=True, has_addendum=False)
   - certificate_of_service_attachment: ALDocument.using(title="Certificate of service", filename="certificate_of_service", enabled=True, has_addendum=False, )
 ---
-# Bundles group the ALDocuments into separate downloads, such as for court and for the user
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[certificate_of_service_Post_interview_instructions, certificate_of_service_attachment], filename="certificate_of_service", title="All forms to download for your records", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[certificate_of_service_attachment],  filename="certificate_of_service", title="All forms to deliver to court", enabled=True)
 ---
-# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
-# used for "preview" and "final" keys, and logic in the template checks the value of 
-# `i` to show or hide the user's signature
 attachment:
   name: Post-interview-Instructions
   filename: certificate_of_service_next_steps
