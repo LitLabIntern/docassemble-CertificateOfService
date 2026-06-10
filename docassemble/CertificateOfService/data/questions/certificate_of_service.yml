@@ -67,8 +67,13 @@ code: |
 code: |
   github_repo_name =  'docassemble-CertificateOfService'
 ---
+---
+template: certificate_of_service_title_template
+content: |
+  File a Certificate of Service
+---
 code: |
-  interview_short_title = 'File a Certificate of Service'
+  interview_short_title = str(certificate_of_service_title_template)
 ---
 code: |
   al_form_type = "existing_case" 
@@ -81,8 +86,6 @@ objects:
 sections:
   - review_certificate_of_service: Review your answers
 ---
-comment: |
-  Controls order and branching logic for questions specific to this form
 id: interview_order_certificate_of_service
 code: |
   allowed_courts = []
@@ -183,16 +186,15 @@ subquestion: |
 
   If you are a _____________, you can use this interview to ____________.
 
-  Most people take about 10 minutes to complete this interview.
+  Most people take about 10 minutes to finish this interview.
 ---
 id: Is the user the plaintiff or defendant?
 question: |
-  Did you start this case, or are you responding to a case
-  that someone else started?
+  Are you starting or responding to this case?
 subquestion: |
   ${ collapse_template(help_user_ask_role_template) }
 fields: 
-  - no label: user_ask_role
+  - Your role: user_ask_role
     datatype: radio
     choices:
       - Starting a new case: plaintiff
@@ -241,7 +243,7 @@ fields:
     input type: area
     required: False
     help: |
-      If you do not have a phone number or email, provide
+      If you do not have a phone number or email, give
       specific contact instructions. For example, use a friend's phone number.
       But the friend must be someone you can rely on to give you a
       message.
@@ -291,7 +293,7 @@ code: |
 ---
 id: Who was served
 question: |
-  Who recieved the papers?
+  Who received the papers?
 fields:
   - Choose: person_served
     input type: radio
@@ -472,7 +474,7 @@ event: certificate_of_service_download
 question: |
   All done
 subquestion: |
-  Thank you ${users}. Your form is ready to download and deliver.
+  Your form is ready to download and deliver.
   
   View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
 
