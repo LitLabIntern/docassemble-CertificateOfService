@@ -280,14 +280,16 @@ fields:
   - Choose: delivery_of_papers
     input type: radio
     choices:
-      - Delivered in person
-      - Sent papers by mail
+    - label: Delivered in person
+      value: personal_service
+    - label: Sent papers by mail
+      value: service_by_mail
 ---
 code: |
-  if delivery_of_papers == "Delivered in person":
+  if delivery_of_papers == "personal_service":
     personal_service = True
     service_by_mail = False
-  elif delivery_of_papers == "Sent papers by mail":
+  elif delivery_of_papers == "service_by_mail":
     service_by_mail = True
     personal_service = False
 ---
@@ -298,8 +300,8 @@ fields:
   - Choose: person_served
     input type: radio
     choices:
-      - ${ other_parties[0].name.full() }
-      - Other
+      - ${ other_parties[0].name.full() }: ${ other_parties[0].name.full() }
+      - Other: Other
   - Name of person served: other_person_served
     show if:
       variable: person_served
